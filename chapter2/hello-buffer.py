@@ -18,8 +18,8 @@ int hello(void *ctx) {
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
    
-   bpf_get_current_comm(&data.command, sizeof(data.command));
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), message); 
+   bpf_get_current_comm(data.command, sizeof(data.command));
+   bpf_probe_read_kernel(data.message, sizeof(data.message), message); 
  
    output.perf_submit(ctx, &data, sizeof(data)); 
  

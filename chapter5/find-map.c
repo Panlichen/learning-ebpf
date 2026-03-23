@@ -14,6 +14,6 @@ int main()
         printf("No FD\n");
     } else {
         bpf_obj_get_info_by_fd(findme, &info, &len);
-        printf("name %s\n", info.name);
+        printf("Name: %s\n", info.name);
     }
 }

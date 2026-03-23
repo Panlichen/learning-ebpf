@@ -27,13 +27,13 @@ int hello(void *ctx) {
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
+   bpf_get_current_comm(data.command, sizeof(data.command));
 
    p = config.lookup(&data.uid);
    if (p != 0) {
-      bpf_probe_read_kernel(&data.message, sizeof(data.message), p->message);       
+      bpf_probe_read_kernel(data.message, sizeof(data.message), p->message);       
    } else {
-      bpf_probe_read_kernel(&data.message, sizeof(data.message), message); 
+      bpf_probe_read_kernel(data.message, sizeof(data.message), message); 
    }
 
    output.perf_submit(ctx, &data, sizeof(data)); 

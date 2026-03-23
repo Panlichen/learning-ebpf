@@ -45,9 +45,9 @@ int kprobe_exec(void *ctx)
    }
 
    if (p != 0) {
-      bpf_probe_read_kernel(&data.message, sizeof(data.message), p->message);  
+      bpf_probe_read_kernel_str(data.message, sizeof(data.message), p->message);  
    } else {
-      bpf_probe_read_kernel(&data.message, sizeof(data.message), message); 
+      bpf_probe_read_kernel_str(data.message, sizeof(data.message), message); 
    }
 
    // Changing this to <= means and c could have value beyond the bounds of the
@@ -66,7 +66,7 @@ int kprobe_exec(void *ctx)
       bpf_printk("%c", a);
    } 
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
+   bpf_get_current_comm(data.command, sizeof(data.command));
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU,  &data, sizeof(data));
 
    return 0;

@@ -32,14 +32,14 @@ int BPF_KPROBE_SYSCALL(hello, const char *pathname)
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
-   bpf_probe_read_user_str(&data.path, sizeof(data.path), pathname);
+   bpf_get_current_comm(data.command, sizeof(data.command));
+   bpf_probe_read_user_str(data.path, sizeof(data.path), pathname);
 
    p = bpf_map_lookup_elem(&my_config, &data.uid);
    if (p != 0) {
-      bpf_probe_read_kernel_str(&data.message, sizeof(data.message), p->message);
+      bpf_probe_read_kernel_str(data.message, sizeof(data.message), p->message);
    } else {
-      bpf_probe_read_kernel_str(&data.message, sizeof(data.message), message); 
+      bpf_probe_read_kernel_str(data.message, sizeof(data.message), message); 
    }
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));   
