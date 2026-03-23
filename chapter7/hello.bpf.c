@@ -34,7 +34,7 @@ int BPF_KPROBE_SYSCALL(kprobe_sys_execve, const char *pathname)
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
    bpf_get_current_comm(data.command, sizeof(data.command));
-   bpf_probe_read_user(data.path, sizeof(data.path), pathname);
+   bpf_probe_read_user_str(data.path, sizeof(data.path), pathname);
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));
    return 0;
