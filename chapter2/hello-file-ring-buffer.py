@@ -15,8 +15,8 @@ TRACEPOINT_PROBE(syscalls, sys_enter_openat)
   struct event_t event = {};
 
   event.dfd = args->dfd;
-  bpf_probe_read_user_str(&event.filename, sizeof(event.filename), args->filename);
-  bpf_get_current_comm(&event.command, sizeof(event.command));
+  bpf_probe_read_user_str(event.filename, sizeof(event.filename), args->filename);
+  bpf_get_current_comm(event.command, sizeof(event.command));
 
   bpf_trace_printk("File %d - %s", event.dfd, event.filename);
   bpf_trace_printk("     opened by:%s", event.command);

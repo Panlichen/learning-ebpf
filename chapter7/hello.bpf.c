@@ -28,13 +28,13 @@ int BPF_KPROBE_SYSCALL(kprobe_sys_execve, const char *pathname)
 {
    struct data_t data = {}; 
 
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), kprobe_sys_msg); 
+   bpf_probe_read_kernel(data.message, sizeof(data.message), kprobe_sys_msg); 
    bpf_printk("%s: pathname: %s", kprobe_sys_msg, pathname);
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
-   bpf_get_current_comm(&data.command, sizeof(data.command));
-   bpf_probe_read_user(&data.path, sizeof(data.path), pathname);
+   bpf_get_current_comm(data.command, sizeof(data.command));
+   bpf_probe_read_user(data.path, sizeof(data.path), pathname);
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));
    return 0;
@@ -46,14 +46,14 @@ SEC("kprobe/do_execve")
 int BPF_KPROBE(kprobe_do_execve, struct filename *filename) {
    struct data_t data = {}; 
 
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), kprobe_msg); 
+   bpf_probe_read_kernel(data.message, sizeof(data.message), kprobe_msg); 
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
+   bpf_get_current_comm(data.command, sizeof(data.command));
    const char *name = BPF_CORE_READ(filename, name);
-   bpf_probe_read_kernel(&data.path, sizeof(data.path), name);
+   bpf_probe_read_kernel(data.path, sizeof(data.path), name);
 
    bpf_printk("%s: filename->name: %s", kprobe_msg, name);
    
@@ -69,14 +69,14 @@ SEC("fentry/do_execve")
 int BPF_PROG(fentry_execve, struct filename *filename) {
    struct data_t data = {}; 
 
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), fentry_msg); 
+   bpf_probe_read_kernel(data.message, sizeof(data.message), fentry_msg); 
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
+   bpf_get_current_comm(data.command, sizeof(data.command));
    const char *name = BPF_CORE_READ(filename, name);
-   bpf_probe_read_kernel(&data.path, sizeof(data.path), name);
+   bpf_probe_read_kernel(data.path, sizeof(data.path), name);
 
    bpf_printk("%s: filename->name: %s", fentry_msg, name);
 
@@ -113,14 +113,14 @@ SEC("tp/syscalls/sys_enter_execve")
 int tp_sys_enter_execve(struct my_syscalls_enter_execve *ctx) {
    struct data_t data = {}; 
 
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), tp_msg);
+   bpf_probe_read_kernel(data.message, sizeof(data.message), tp_msg);
    bpf_printk("%s: ctx->filename_ptr: %s", tp_msg, ctx->filename_ptr);
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
-   bpf_get_current_comm(&data.command, sizeof(data.command));
-   bpf_probe_read_user(&data.path, sizeof(data.path), ctx->filename_ptr);  
+   bpf_get_current_comm(data.command, sizeof(data.command));
+   bpf_probe_read_user(data.path, sizeof(data.path), ctx->filename_ptr);  
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));   
    return 0;
@@ -134,14 +134,14 @@ int tp_btf_exec(struct trace_event_raw_sched_process_exec *ctx)
    struct data_t data = {}; 
    // pid_t pid = ctx->pid; 
    
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), tp_btf_exec_msg);
+   bpf_probe_read_kernel(data.message, sizeof(data.message), tp_btf_exec_msg);
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
    // TODO!! Resolve issues accessing data that isn't aligned to an 8-byte boundary
    // bpf_printk("%s %d\n", tp_btf_exec_msg, pid);
-   // bpf_probe_read_kernel_str(&data.command, sizeof(data.command), ctx->pid); 
+   // bpf_probe_read_kernel_str(data.command, sizeof(data.command), ctx->pid); 
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));
    return 0;
@@ -152,7 +152,7 @@ int raw_tp_exec(struct bpf_raw_tracepoint_args *ctx)
 {
    struct data_t data = {}; 
 
-   bpf_probe_read_kernel(&data.message, sizeof(data.message), raw_tp_exec_msg);
+   bpf_probe_read_kernel(data.message, sizeof(data.message), raw_tp_exec_msg);
 
    data.pid = bpf_get_current_pid_tgid() >> 32;
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
