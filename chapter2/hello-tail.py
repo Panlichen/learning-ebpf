@@ -52,7 +52,7 @@ for i in range(len(prog_array)):
         continue  # Skip mapping syscall 140 (setpriority) - can be triggered using 'nice' - let it use bpf_trace_printk default handler
     prog_array[ct.c_int(i)] = ct.c_int(ignore_fn.fd)
 
-# Only enable few syscalls which are of the interest
+# Only enable few syscalls which are of interest
 prog_array[ct.c_int(59)] = ct.c_int(exec_fn.fd)
 prog_array[ct.c_int(222)] = ct.c_int(timer_fn.fd)
 prog_array[ct.c_int(223)] = ct.c_int(timer_fn.fd)
