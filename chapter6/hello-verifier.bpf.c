@@ -45,7 +45,7 @@ int kprobe_exec(void *ctx)
    }
 
    if (p != 0) {
-      bpf_probe_read_kernel(data.message, sizeof(data.message), p->message);  
+      bpf_probe_read_kernel_str(data.message, sizeof(data.message), p->message);  
    } else {
       bpf_probe_read_kernel_str(data.message, sizeof(data.message), message); 
    }

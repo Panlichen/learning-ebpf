@@ -76,7 +76,7 @@ int BPF_PROG(fentry_execve, struct filename *filename) {
 
    bpf_get_current_comm(data.command, sizeof(data.command));
    const char *name = BPF_CORE_READ(filename, name);
-   bpf_probe_read_kernel(data.path, sizeof(data.path), name);
+   bpf_probe_read_kernel_str(data.path, sizeof(data.path), name);
 
    bpf_printk("%s: filename->name: %s", fentry_msg, name);
 
