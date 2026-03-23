@@ -39,7 +39,6 @@ int ignore_opcode(void *ctx) {
 """
 
 b = BPF(text=program)
-b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello")
 
 ignore_fn = b.load_func("ignore_opcode", BPF.RAW_TRACEPOINT)
 exec_fn = b.load_func("hello_exec", BPF.RAW_TRACEPOINT)
@@ -51,12 +50,13 @@ prog_array = b.get_table("syscall")
 for i in range(len(prog_array)):
     prog_array[ct.c_int(i)] = ct.c_int(ignore_fn.fd)
 
-# Only enable few syscalls which are of the interest
+# Only enable few syscalls which are of interest
 prog_array[ct.c_int(59)] = ct.c_int(exec_fn.fd)
 prog_array[ct.c_int(222)] = ct.c_int(timer_fn.fd)
 prog_array[ct.c_int(223)] = ct.c_int(timer_fn.fd)
 prog_array[ct.c_int(224)] = ct.c_int(timer_fn.fd)
 prog_array[ct.c_int(225)] = ct.c_int(timer_fn.fd)
 prog_array[ct.c_int(226)] = ct.c_int(timer_fn.fd)
+b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello")
 
 b.trace_print()
