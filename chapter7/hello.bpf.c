@@ -120,7 +120,7 @@ int tp_sys_enter_execve(struct my_syscalls_enter_execve *ctx) {
    data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
 
    bpf_get_current_comm(data.command, sizeof(data.command));
-   bpf_probe_read_user(data.path, sizeof(data.path), ctx->filename_ptr);  
+   bpf_probe_read_user_str(data.path, sizeof(data.path), ctx->filename_ptr);
 
    bpf_perf_event_output(ctx, &output, BPF_F_CURRENT_CPU, &data, sizeof(data));   
    return 0;
