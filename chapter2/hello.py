@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
-from bcc import BPF
 import sys
+
+SYSTEM_DIST_PACKAGES = "/usr/lib/python3/dist-packages"
+if SYSTEM_DIST_PACKAGES not in sys.path:
+    sys.path.insert(0, SYSTEM_DIST_PACKAGES)
+
+from bcc import BPF
 
 program = r"""
 int hello(void *ctx) {
